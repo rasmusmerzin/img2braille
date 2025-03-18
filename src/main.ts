@@ -61,6 +61,16 @@ const thresholdInput = (() => {
   controls.append(input);
   return input;
 })();
+const invertInput = (() => {
+  const label = document.createElement("label");
+  label.textContent = "Invert";
+  controls.append(label);
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.checked = true;
+  controls.append(input);
+  return input;
+})();
 
 const file = readable<File | null>(
   fileInput.files && fileInput.files[0],
@@ -85,21 +95,28 @@ const threshold = readable(thresholdInput.valueAsNumber, (set) => {
   thresholdInput.addEventListener("input", onchange);
   return () => thresholdInput.removeEventListener("input", onchange);
 });
+const invert = readable(invertInput.checked, (set) => {
+  const onchange = () => set(invertInput.checked);
+  invertInput.addEventListener("change", onchange);
+  return () => invertInput.removeEventListener("change", onchange);
+});
 
 uploadButton.onclick = () => fileInput.click();
 clipboardButton.onclick = () => navigator.clipboard.writeText(output.innerText);
 
-derived([image, width, threshold], (pair) => pair).subscribe((async ([
+derived([image, width, threshold, invert], (pair) => pair).subscribe((async ([
   image,
   width,
   threshold,
-]: [HTMLImageElement, number, number]) => {
+  invert,
+]: [HTMLImageElement, number, number, boolean]) => {
   controls.style.display = image ? "" : "none";
   output.textContent = "";
+  output.style.filter = invert ? "invert(1)" : "";
   if (!image) return;
   const ratio = image.width / image.height;
   const height = width / ratio;
   const canvas = imageToCanvas(image, { width, height });
-  const braille = canvasToBraille(canvas, threshold, true);
+  const braille = canvasToBraille(canvas, threshold, invert);
   output.textContent = braille;
 }) as any);

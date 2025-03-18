@@ -63,8 +63,8 @@ button {
 }
 
 #output {
-  background: #000;
-  color: #fff;
+  background: #fff;
+  color: #000;
   font-family: "Roboto Mono", monospace;
   font-size: 12px;
   margin: 32px 0;
