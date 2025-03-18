@@ -1,4 +1,8 @@
-export function canvasToBraille(canvas: HTMLCanvasElement, threshold: number) {
+export function canvasToBraille(
+  canvas: HTMLCanvasElement,
+  threshold: number,
+  inverted: boolean,
+) {
   const context = canvas.getContext("2d")!;
   const { width, height } = canvas;
   const columns = Math.ceil(width / 2);
@@ -25,8 +29,10 @@ export function canvasToBraille(canvas: HTMLCanvasElement, threshold: number) {
   }
   function getPixel(x: number, y: number) {
     const [r, g, b, a] = context.getImageData(x, y, 1, 1).data;
+    if (!a) return false;
     const score = r + g + b + a;
-    return score > threshold;
+    if (inverted) return score > threshold;
+    else return score < threshold;
   }
   return result;
 }
