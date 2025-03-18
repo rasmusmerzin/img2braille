@@ -1,14 +1,1 @@
-<svg width="154" height="215" xmlns="http://www.w3.org/2000/svg">
-<g stroke="black" fill="none">
- <circle cx="108" cy="46" r="15" />
- <circle cx="46" cy="108" r="15" />
-</g>
-<g fill="black">
- <circle cx="46" cy="46" r="15" />
- <circle cx="108" cy="108" r="15" />
-</g>
-<g fill="limegreen">
- <circle cx="46" cy="169" r="15" />
- <circle cx="108" cy="169" r="15" />
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="89" viewBox="0 0 154 215"><g fill="none" stroke="#000"><circle cx="108" cy="46" r="15"/><circle cx="46" cy="108" r="15"/></g><circle cx="46" cy="46" r="15"/><circle cx="108" cy="108" r="15"/><g fill="#32cd32"><circle cx="46" cy="169" r="15"/><circle cx="108" cy="169" r="15"/></g></svg>
