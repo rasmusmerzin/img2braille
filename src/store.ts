@@ -3,8 +3,13 @@ export type Subscriber<T> = (value: T) => Cleanup | void;
 export type Unsubscriber = () => void;
 export type Getter<T> = () => T;
 export type Setter<T> = (value: T) => T;
+export type Updater<T> = (predicate: (value: T) => T) => T;
 export type Stopper = () => void;
-export type Starter<T> = (get: Getter<T>, set: Setter<T>) => Stopper | void;
+export type Starter<T> = (
+  set: Setter<T>,
+  update: Updater<T>,
+  get: Getter<T>,
+) => Stopper | void;
 
 export interface Readable<T> {
   get: Getter<T>;
@@ -13,6 +18,7 @@ export interface Readable<T> {
 
 export interface Writable<T> extends Readable<T> {
   set: Setter<T>;
+  update: Updater<T>;
 }
 
 export function readable<T>(value: T, start?: Starter<T>): Readable<T> {
@@ -27,13 +33,13 @@ export function writable<T>(value: T, start?: Starter<T>): Writable<T> {
   const listeners = new Set<Subscriber<T>>();
   const maid = new Set<Cleanup>();
   let stop: Stopper | void;
-  function get() {
-    if (isEmpty() && start) stop = start(get, set);
+  function get(): T {
+    if (isEmpty() && start) stop = start(set, update, get);
     const v = value;
     if (isEmpty() && stop) stop();
     return v;
   }
-  function set(newValue: T) {
+  function set(newValue: T): T {
     value = newValue;
     for (const cleanup of maid) cleanup();
     maid.clear();
@@ -43,8 +49,11 @@ export function writable<T>(value: T, start?: Starter<T>): Writable<T> {
     }
     return value;
   }
+  function update(predicate: (value: T) => T): T {
+    return set(predicate(value));
+  }
   function subscribe(listener: Subscriber<T>, immediate = true): Unsubscriber {
-    if (isEmpty() && start) stop = start(get, set);
+    if (isEmpty() && start) stop = start(set, update, get);
     listeners.add(listener);
     if (immediate) {
       const cleanup = listener(value);
@@ -58,7 +67,7 @@ export function writable<T>(value: T, start?: Starter<T>): Writable<T> {
   function isEmpty() {
     return listeners.size === 0;
   }
-  return { get, set, subscribe };
+  return { get, set, update, subscribe };
 }
 
 export function derived<I extends Readable<unknown>[], O>(
@@ -68,7 +77,7 @@ export function derived<I extends Readable<unknown>[], O>(
   }) => O,
 ): Readable<O> {
   let values = stores.map((store) => store.get());
-  return readable(fn(values as any), (_get, set) => {
+  return readable(fn(values as any), (set) => {
     values = stores.map((store) => store.get());
     set(fn(values as any));
     const unsubscribers = stores.map((store, i) =>

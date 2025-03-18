@@ -7,7 +7,7 @@ test("writable listens to changes", () => {
   store.subscribe((v) => {
     value = v;
   });
-  store.set(1);
+  store.update((v) => ++v);
   expect(value).toBe(1);
 });
 
@@ -62,7 +62,7 @@ test("readable starts and stops on subscribers", () => {
 test("readable starts and stops for standalone get", () => {
   let started = false;
   let stopped = false;
-  const store = readable(0, (_get, set) => {
+  const store = readable(0, (set) => {
     started = true;
     set(1);
     return () => {
