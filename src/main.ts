@@ -7,19 +7,23 @@ const input = (() => {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
-  root.append(input);
   return input;
+})();
+const uploadButton = (() => {
+  const button = document.createElement("button");
+  button.id = "upload";
+  button.textContent = "Upload Image";
+  root.append(button);
+  return button;
 })();
 const output = (() => {
   const output = document.createElement("pre");
-  output.style.background = "black";
-  output.style.color = "white";
-  output.style.fontFamily = `"Roboto Mono", monospace`;
-  output.style.width = "min-content";
+  output.id = "output";
   root.append(output);
   return output;
 })();
 
+uploadButton.onclick = () => input.click();
 input.addEventListener("change", async () => {
   const file = input.files && input.files[0];
   if (!file) return;
