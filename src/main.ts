@@ -1,6 +1,7 @@
 import "./style.css";
 import { fileToDataUrl, dataUrlToImage, imageToCanvas } from "./image";
 import { canvasToBraille } from "./braille";
+import { readable } from "./store";
 
 const root = document.getElementById("root")!;
 const input = (() => {
@@ -22,10 +23,32 @@ const output = (() => {
   root.append(output);
   return output;
 })();
+const controls = (() => {
+  const controls = document.createElement("div");
+  controls.id = "controls";
+  root.append(controls);
+  return controls;
+})();
+const clipboardButton = (() => {
+  const button = document.createElement("button");
+  button.id = "clipboard";
+  button.textContent = "Copy to Clipboard";
+  controls.append(button);
+  return button;
+})();
+
+const file = readable<File | null>(input.files && input.files[0], (set) => {
+  const onchange = () => set(input.files && input.files[0]);
+  input.addEventListener("change", onchange);
+  return () => input.removeEventListener("change", onchange);
+});
 
 uploadButton.onclick = () => input.click();
-input.addEventListener("change", async () => {
-  const file = input.files && input.files[0];
+clipboardButton.onclick = () => navigator.clipboard.writeText(output.innerText);
+
+file.subscribe(async (file) => {
+  controls.style.display = file ? "" : "none";
+  output.textContent = "";
   if (!file) return;
   const url = await fileToDataUrl(file);
   const image = await dataUrlToImage(url);

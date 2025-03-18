@@ -18,18 +18,18 @@
 }
 
 body {
-  margin: 64px 32px;
+  margin: 0;
 }
 
 #root {
-  max-width: 576px;
-  margin: auto;
+  margin: 64px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 #upload {
+  cursor: pointer;
   padding: 12px 32px;
   font-size: 16px;
   font-weight: bold;
@@ -37,6 +37,18 @@ body {
   border: none;
   color: var(--background);
   background: var(--foreground);
+}
+
+#clipboard {
+  cursor: pointer;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 40px;
+  border: none;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--foreground);
 }
 
 #output {
@@ -47,4 +59,15 @@ body {
   margin: 32px 0;
   width: min-content;
   user-select: none;
+}
+
+button {
+  transition: 0.2s;
+  &:hover {
+    filter: invert(0.1);
+  }
+  &:active {
+    filter: invert(0.25);
+    transform: scale(0.8);
+  }
 }

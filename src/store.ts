@@ -1,5 +1,4 @@
-export type Cleanup = () => void;
-export type Subscriber<T> = (value: T) => Cleanup | void;
+export type Subscriber<T> = (value: T) => any;
 export type Unsubscriber = () => void;
 export type Getter<T> = () => T;
 export type Setter<T> = (value: T) => T;
@@ -31,7 +30,6 @@ export function readable<T>(value: T, start?: Starter<T>): Readable<T> {
 
 export function writable<T>(value: T, start?: Starter<T>): Writable<T> {
   const listeners = new Set<Subscriber<T>>();
-  const maid = new Set<Cleanup>();
   let stop: Stopper | void;
   function get(): T {
     if (isEmpty() && start) stop = start(set, update, get);
@@ -41,12 +39,7 @@ export function writable<T>(value: T, start?: Starter<T>): Writable<T> {
   }
   function set(newValue: T): T {
     value = newValue;
-    for (const cleanup of maid) cleanup();
-    maid.clear();
-    for (const listener of listeners) {
-      const cleanup = listener(value);
-      if (cleanup) maid.add(cleanup);
-    }
+    for (const listener of listeners) listener(value);
     return value;
   }
   function update(predicate: (value: T) => T): T {
@@ -55,10 +48,7 @@ export function writable<T>(value: T, start?: Starter<T>): Writable<T> {
   function subscribe(listener: Subscriber<T>, immediate = true): Unsubscriber {
     if (isEmpty() && start) stop = start(set, update, get);
     listeners.add(listener);
-    if (immediate) {
-      const cleanup = listener(value);
-      if (cleanup) maid.add(cleanup);
-    }
+    if (immediate) listener(value);
     return function unsubscribe() {
       listeners.delete(listener);
       if (isEmpty() && stop) stop();
