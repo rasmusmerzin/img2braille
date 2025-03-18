@@ -36,7 +36,7 @@ const clipboardButton = (() => {
   controls.append(button);
   return button;
 })();
-const widthInput = (() => {
+const [widthInput, widthLabel] = (() => {
   const label = document.createElement("label");
   label.textContent = "Width";
   controls.append(label);
@@ -47,9 +47,9 @@ const widthInput = (() => {
   input.max = "100";
   input.value = "80";
   controls.append(input);
-  return input;
+  return [input, label];
 })();
-const thresholdInput = (() => {
+const [thresholdInput, thresholdLabel] = (() => {
   const label = document.createElement("label");
   label.textContent = "Threshold";
   controls.append(label);
@@ -59,7 +59,7 @@ const thresholdInput = (() => {
   input.max = "1024";
   input.value = "512";
   controls.append(input);
-  return input;
+  return [input, label];
 })();
 const invertInput = (() => {
   const label = document.createElement("label");
@@ -103,6 +103,11 @@ const invert = readable(invertInput.checked, (set) => {
 
 uploadButton.onclick = () => fileInput.click();
 clipboardButton.onclick = () => navigator.clipboard.writeText(output.innerText);
+
+width.subscribe((width) => (widthLabel.textContent = `Width (${width})`));
+threshold.subscribe(
+  (threshold) => (thresholdLabel.textContent = `Threshold (${threshold})`),
+);
 
 derived([image, width, threshold, invert], (pair) => pair).subscribe((async ([
   image,

@@ -19,9 +19,11 @@
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 button {
+  cursor: pointer;
   transition: 200ms transform;
   &:hover {
     filter: invert(0.1);
@@ -40,7 +42,6 @@ button {
 }
 
 #upload {
-  cursor: pointer;
   padding: 12px 32px;
   font-size: 16px;
   font-weight: bold;
@@ -51,9 +52,8 @@ button {
 }
 
 #clipboard {
-  cursor: pointer;
   padding: 12px 32px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   border-radius: 40px;
   border: none;
@@ -81,5 +81,8 @@ button {
   }
   > label {
     margin-bottom: 8px;
+  }
+  > input[type="range"] {
+    width: 240px;
   }
 }
